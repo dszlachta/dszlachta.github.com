@@ -1,4 +1,4 @@
 User-agent: *
 Disallow: 
 
-Sitemap: http://scrptn.co/sitemap.xml 
+Sitemap: http://dszlachta.github.io/sitemap.xml 

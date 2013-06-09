@@ -1,0 +1,9 @@
+<div class="highlight"><pre><span class="nx">perform</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">code</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="cm">/* return function binded to key code. If there&#39;s no function</span>
+<span class="cm">     * binded, return default function </span>
+<span class="cm">     */</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">bindings</span><span class="p">[</span><span class="nx">code</span><span class="p">]</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">defaultAction</span><span class="p">;</span>
+
+<span class="p">}</span>
+</pre></div>

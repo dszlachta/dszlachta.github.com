@@ -2,20 +2,20 @@
 Syntax error: File to import not found or unreadable: susy.
               Load paths:
                 Sass::Globbing::Importer
-                /www/blog/sass
+                /www/dszlachta.github.com/sass
                 /var/lib/gems/1.9.1/gems/compass-0.12.2/frameworks/blueprint/stylesheets
                 /var/lib/gems/1.9.1/gems/compass-0.12.2/frameworks/compass/stylesheets
                 Compass::SpriteImporter
-        on line 2 of /www/blog/sass/lib/_grid.scss
-        from line 4 of /www/blog/sass/lib/_base.scss
-        from line 6 of /www/blog/sass/application.scss
+        on line 2 of /www/dszlachta.github.com/sass/lib/_grid.scss
+        from line 4 of /www/dszlachta.github.com/sass/lib/_base.scss
+        from line 6 of /www/dszlachta.github.com/sass/application.scss
 
-1: /www/blog/sass/application.scss
+1: /www/dszlachta.github.com/sass/application.scss
 
 Backtrace:
-/www/blog/sass/lib/_grid.scss:2
-/www/blog/sass/lib/_base.scss:4
-/www/blog/sass/application.scss:6
+/www/dszlachta.github.com/sass/lib/_grid.scss:2
+/www/dszlachta.github.com/sass/lib/_base.scss:4
+/www/dszlachta.github.com/sass/application.scss:6
 /var/lib/gems/1.9.1/gems/sass-3.1.20/lib/sass/tree/import_node.rb:64:in `rescue in import'
 /var/lib/gems/1.9.1/gems/sass-3.1.20/lib/sass/tree/import_node.rb:42:in `import'
 /var/lib/gems/1.9.1/gems/sass-3.1.20/lib/sass/tree/import_node.rb:25:in `imported_file'
@@ -72,4 +72,4 @@ Backtrace:
 body:before {
   white-space: pre;
   font-family: monospace;
-  content: "Syntax error: File to import not found or unreadable: susy.\A               Load paths:\A                 Sass::Globbing::Importer\A                 /www/blog/sass\A                 /var/lib/gems/1.9.1/gems/compass-0.12.2/frameworks/blueprint/stylesheets\A                 /var/lib/gems/1.9.1/gems/compass-0.12.2/frameworks/compass/stylesheets\A                 Compass::SpriteImporter\A         on line 2 of /www/blog/sass/lib/_grid.scss\A         from line 4 of /www/blog/sass/lib/_base.scss\A         from line 6 of /www/blog/sass/application.scss\A \A 1: /www/blog/sass/application.scss"; }
+  content: "Syntax error: File to import not found or unreadable: susy.\A               Load paths:\A                 Sass::Globbing::Importer\A                 /www/dszlachta.github.com/sass\A                 /var/lib/gems/1.9.1/gems/compass-0.12.2/frameworks/blueprint/stylesheets\A                 /var/lib/gems/1.9.1/gems/compass-0.12.2/frameworks/compass/stylesheets\A                 Compass::SpriteImporter\A         on line 2 of /www/dszlachta.github.com/sass/lib/_grid.scss\A         from line 4 of /www/dszlachta.github.com/sass/lib/_base.scss\A         from line 6 of /www/dszlachta.github.com/sass/application.scss\A \A 1: /www/dszlachta.github.com/sass/application.scss"; }

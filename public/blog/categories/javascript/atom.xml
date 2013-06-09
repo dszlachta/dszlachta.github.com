@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: javascript | Scriptin']]></title>
-  <link href="http://scrptn.co/blog/categories/javascript/atom.xml" rel="self"/>
-  <link href="http://scrptn.co/"/>
-  <updated>2013-06-08T15:32:00+02:00</updated>
-  <id>http://scrptn.co/</id>
+  <link href="http://dszlachta.github.io/blog/categories/javascript/atom.xml" rel="self"/>
+  <link href="http://dszlachta.github.io/"/>
+  <updated>2013-06-09T12:23:44+02:00</updated>
+  <id>http://dszlachta.github.io/</id>
   <author>
     <name><![CDATA[Dawid Szlachta]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Lookup Tables: Say Goodbye to Conditional Statements]]></title>
-    <link href="http://scrptn.co/blog/2013/06/03/lookup-tables-say-goodbye-to-conditional-statements/"/>
+    <link href="http://dszlachta.github.io/blog/2013/06/03/lookup-tables-say-goodbye-to-conditional-statements/"/>
     <updated>2013-06-03T20:54:00+02:00</updated>
-    <id>http://scrptn.co/blog/2013/06/03/lookup-tables-say-goodbye-to-conditional-statements</id>
+    <id>http://dszlachta.github.io/blog/2013/06/03/lookup-tables-say-goodbye-to-conditional-statements</id>
     <content type="html"><![CDATA[<p>Have you ever wonder how to get rid of all those <code>if</code>s and <code>switch</code>es in your
 code? Well, it&rsquo;s possible thanks to the technique known as <strong>Lookup tables</strong>.</p>
 
