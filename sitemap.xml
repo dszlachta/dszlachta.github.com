@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
+    <url>
+        <loc>
+            http://dszlachta.github.io/blog/2013/06/03/lookup-tables-say-goodbye-to-conditional-statements/
+        </loc>
+        <lastmod>2013-06-09T11:47:31+02:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dszlachta.github.io/blog/archives/</loc>
+        <lastmod>2013-06-09T11:47:31+02:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dszlachta.github.io/</loc>
+        <lastmod>2013-06-09T11:47:31+02:00</lastmod>
+    </url>
+    <url>
+        <loc>http://dszlachta.github.io/robots.txt</loc>
+        <lastmod>2013-06-09T11:47:31+02:00</lastmod>
+    </url>
+</urlset>
