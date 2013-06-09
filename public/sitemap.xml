@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
+    <url>
+        <loc>
+            http://scrptn.co/blog/2013/06/03/lookup-tables-say-goodbye-to-conditional-statements/
+        </loc>
+        <lastmod>2013-06-08T13:02:21+02:00</lastmod>
+    </url>
+    <url>
+        <loc>http://scrptn.co/blog/archives/</loc>
+        <lastmod>2013-06-08T15:31:59+02:00</lastmod>
+    </url>
+    <url>
+        <loc>http://scrptn.co/</loc>
+        <lastmod>2013-06-08T15:31:59+02:00</lastmod>
+    </url>
+    <url>
+        <loc>http://scrptn.co/robots.txt</loc>
+        <lastmod>2013-06-08T13:02:21+02:00</lastmod>
+    </url>
+</urlset>

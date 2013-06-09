@@ -1,0 +1,122 @@
+$title-color: black;
+$text-color: black;
+
+@import "solarized";
+@import "syntax";
+
+@import url(http://fonts.googleapis.com/css?family=Domine:400,700);
+
+body {
+
+  > header h1 {
+
+    @media screen and (min-width: 1024px) {
+    position: absolute;
+    left: 100px;
+    top: 100px;
+    transform: rotate(90deg);
+  }
+
+  }
+
+}
+
+a {
+
+  color: #002bb8;
+
+}
+
+h1 a {
+
+  color: $title-color;
+  text-decoration: none;
+
+}
+
+div#main, body > footer {
+
+  width: 100%;
+  max-width: 800px;
+
+  margin: auto;
+
+}
+
+div#main {
+
+  margin: 5% auto;
+
+  font-family: 'Domine', serif;
+
+  p code {
+    
+    padding: 2px;
+
+    background-color: #eee;
+
+  }
+
+
+  article {
+
+    line-height: 1.5em;
+    text-align: justify;
+
+    header time {
+      color: lighten($text-color, 50%);
+
+      text-transform: uppercase;
+      font-family: sans-serif;
+
+      span {
+        vertical-align: super;
+        font-size: small;
+      }
+    }
+
+  }
+
+  div.pagination {
+
+    margin-top: 5%;
+
+    text-align: center;
+
+  }
+
+}
+
+body > footer {
+
+  font-family: 'Domine', serif;
+
+  div {
+
+    float: left;
+
+  }
+
+  div:first-child {
+    width: 160px;
+  }
+
+  div:last-child {
+    width: 380px;
+    margin-top: 30px;
+
+    font-style: italic;
+  }
+
+  img {
+
+    width: 150px;
+    height: 150px;
+    border-radius: 75px;
+
+
+  }
+
+  
+}
+
