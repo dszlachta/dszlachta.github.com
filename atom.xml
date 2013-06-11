@@ -4,7 +4,7 @@
   <title><![CDATA[Scriptin']]></title>
   <link href="http://dszlachta.github.io/atom.xml" rel="self"/>
   <link href="http://dszlachta.github.io/"/>
-  <updated>2013-06-09T12:23:44+02:00</updated>
+  <updated>2013-06-11T09:03:07+02:00</updated>
   <id>http://dszlachta.github.io/</id>
   <author>
     <name><![CDATA[Dawid Szlachta]]></name>
@@ -25,9 +25,6 @@ code? Well, it&rsquo;s possible thanks to the technique known as <strong>Lookup 
 (or things that can be represented by numbers), you can populate an array with
 values (like functions) you need, instead.</p>
 
-<!-- more -->
-
-
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -43,9 +40,12 @@ values (like functions) you need, instead.</p>
 <span class='line-number'>13</span>
 <span class='line-number'>14</span>
 <span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
 </pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">getName</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
 </span><span class='line'>
 </span><span class='line'>    <span class="k">switch</span> <span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
 </span><span class='line'>        <span class="k">case</span> <span class="mi">0</span><span class="o">:</span>
 </span><span class='line'>            <span class="k">return</span> <span class="s1">&#39;Ann&#39;</span><span class="p">;</span>
 </span><span class='line'>            <span class="k">break</span><span class="p">;</span>
@@ -55,6 +55,7 @@ values (like functions) you need, instead.</p>
 </span><span class='line'>        <span class="k">case</span> <span class="mi">2</span><span class="o">:</span>
 </span><span class='line'>            <span class="k">return</span> <span class="s1">&#39;Kate&#39;</span><span class="p">;</span>
 </span><span class='line'>            <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>
 </span><span class='line'>    <span class="p">}</span>
 </span><span class='line'>
 </span><span class='line'><span class="p">}</span>
@@ -68,12 +69,21 @@ values (like functions) you need, instead.</p>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
 </pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">names</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">&#39;Ann&#39;</span><span class="p">,</span> <span class="s1">&#39;John&#39;</span><span class="p">,</span> <span class="s1">&#39;Kate&#39;</span> <span class="p">];</span>
 </span><span class='line'>
 </span><span class='line'><span class="kd">function</span> <span class="nx">getName</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
 </span><span class='line'>    <span class="k">return</span> <span class="nx">names</span><span class="p">[</span><span class="nx">id</span><span class="p">];</span>
+</span><span class='line'>
 </span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<!-- more -->
 
 
 <p>Let&rsquo;s think about some more complicated example, like capturing the keys user
@@ -168,8 +178,12 @@ like this:</p>
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
 </pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">Keys</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s1">&#39;o&#39;</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">().</span><span class="nx">charCodeAt</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>
 </span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;You pressed o!&#39;</span><span class="p">);</span>
+</span><span class='line'>
 </span><span class='line'><span class="p">});</span>
 </span><span class='line'>
 </span><span class='line'><span class="nb">window</span><span class="p">.</span><span class="nx">onkeydown</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
@@ -190,8 +204,8 @@ statements :) )</p>
 
 <p>Why lookup tables are better than big <code>switch</code> statements? Code is simplier
 (and that means it&rsquo;s better) and you get a performance boost (the JS engine
-don&rsquo;t have to check values). You can read more about lookup tables in Nicholas
-C. Zakas&#8217; book <em>High Performance JavaScript</em>.</p>
+don&rsquo;t have to check values). You can read more about lookup tables in the book
+<a href="http://www.amazon.com/gp/product/059680279X">High Performance JavaScript</a> by <a href="http://www.nczonline.net/">Nicholas C. Zakas</a> and others.</p>
 ]]></content>
   </entry>
   

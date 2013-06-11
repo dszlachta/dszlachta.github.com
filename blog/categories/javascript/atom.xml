@@ -4,7 +4,7 @@
   <title><![CDATA[Category: javascript | Scriptin']]></title>
   <link href="http://dszlachta.github.io/blog/categories/javascript/atom.xml" rel="self"/>
   <link href="http://dszlachta.github.io/"/>
-  <updated>2013-06-09T12:23:44+02:00</updated>
+  <updated>2013-06-11T09:03:07+02:00</updated>
   <id>http://dszlachta.github.io/</id>
   <author>
     <name><![CDATA[Dawid Szlachta]]></name>
@@ -25,14 +25,12 @@ code? Well, it&rsquo;s possible thanks to the technique known as <strong>Lookup 
 (or things that can be represented by numbers), you can populate an array with
 values (like functions) you need, instead.</p>
 
-<!-- more -->
-
-
 <p>``` javascript</p>
 
 <pre><code>function getName(id) {
 
     switch (id) {
+
         case 0:
             return 'Ann';
             break;
@@ -42,6 +40,7 @@ values (like functions) you need, instead.</p>
         case 2:
             return 'Kate';
             break;
+
     }
 
 }
@@ -55,11 +54,16 @@ Can be simplified to:</p>
 <pre><code>var names = [ 'Ann', 'John', 'Kate' ];
 
 function getName(id) {
+
     return names[id];
+
 }
 </code></pre>
 
 <p>```</p>
+
+<!-- more -->
+
 
 <p>Let&rsquo;s think about some more complicated example, like capturing the keys user
 presses. Normally, you need a huge <code>switch</code> statement, don&rsquo;t you?</p>
@@ -125,7 +129,9 @@ like this:</p>
 <p>``` javascript</p>
 
 <pre><code>Keys.bind('o'.toUpperCase().charCodeAt(0), function() {
+
     console.log('You pressed o!');
+
 });
 
 window.onkeydown = function(event) {
@@ -147,8 +153,8 @@ statements :) )</p>
 
 <p>Why lookup tables are better than big <code>switch</code> statements? Code is simplier
 (and that means it&rsquo;s better) and you get a performance boost (the JS engine
-don&rsquo;t have to check values). You can read more about lookup tables in Nicholas
-C. Zakas' book <em>High Performance JavaScript</em>.</p>
+don&rsquo;t have to check values). You can read more about lookup tables in the book
+<a href="http://www.amazon.com/gp/product/059680279X">High Performance JavaScript</a> by <a href="http://www.nczonline.net/">Nicholas C. Zakas</a> and others.</p>
 ]]></content>
   </entry>
   
