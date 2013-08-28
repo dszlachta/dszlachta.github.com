@@ -1,0 +1,396 @@
+
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Two more ways to skip switch statements: Array#filter and lookup object - Scriptin'</title>
+  <meta name="author" content="Dawid Szlachta">
+
+  
+  <meta name="description" content="So the truth is: I don&rsquo;t like switch statements. They make my code look
+messy and they require me to type more. Few days ago I got an &hellip;">
+  
+
+  
+  <link rel="canonical" href="http://dszlachta.github.io/blog/2013/08/10/one-more-way-to-skip-switch-statements-array-number-filter">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/style.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Scriptin'" type="application/atom+xml">
+  <script src="/js/prefixfree.min.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-41585591-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="/">Scriptin'</a></h1>
+  
+</hgroup>
+
+</header>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Two More Ways to Skip Switch Statements: Array#filter and Lookup Object</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-10T16:10:00+02:00" pubdate data-updated="true">Aug 10<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>So the truth is: I don&rsquo;t like <code>switch</code> statements. They make my code look
+messy and they require me to type more. Few days ago I got an interesting idea
+to avoid them.</p>
+
+<p>Let&rsquo;s say we need to check if a given string represents a name of the day of
+the week. Traditional code would look like this:</p>
+
+<!-- more -->
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">is_dayname</span><span class="p">(</span><span class="nx">string</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">r</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">switch</span><span class="p">(</span><span class="nx">string</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">case</span> <span class="s1">&#39;Monday&#39;</span><span class="o">:</span>
+</span><span class='line'>    <span class="k">case</span> <span class="s1">&#39;Tuesday&#39;</span><span class="o">:</span>
+</span><span class='line'>    <span class="k">case</span> <span class="s1">&#39;Wednesday&#39;</span><span class="o">:</span>
+</span><span class='line'>    <span class="k">case</span> <span class="s1">&#39;Thursday&#39;</span><span class="o">:</span>
+</span><span class='line'>    <span class="k">case</span> <span class="s1">&#39;Friday&#39;</span><span class="o">:</span>
+</span><span class='line'>    <span class="k">case</span> <span class="s1">&#39;Saturday&#39;</span><span class="o">:</span>
+</span><span class='line'>    <span class="k">case</span> <span class="s1">&#39;Sunday&#39;</span><span class="o">:</span>
+</span><span class='line'>      <span class="nx">r</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">default</span><span class="o">:</span>
+</span><span class='line'>      <span class="nx">r</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">r</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// is_dayname(&#39;not_a_day&#39;)</span>
+</span><span class='line'><span class="c1">// =&gt; false</span>
+</span><span class='line'><span class="c1">// is_dayname(&#39;Monday&#39;)</span>
+</span><span class='line'><span class="c1">// =&gt; true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&rsquo;s too much code to achieve this simple functionality. Names of the
+days are some kind of list, aren&rsquo;t they? So we could put them into an array:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">daynames</span> <span class="o">=</span> <span class="p">[</span>
+</span><span class='line'>        <span class="s1">&#39;Monday&#39;</span><span class="p">,</span> <span class="s1">&#39;Tuesday&#39;</span><span class="p">,</span> <span class="s1">&#39;Wednesday&#39;</span><span class="p">,</span> <span class="s1">&#39;Thursday&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s1">&#39;Friday&#39;</span><span class="p">,</span> <span class="s1">&#39;Saturday&#39;</span><span class="p">,</span> <span class="s1">&#39;Sunday&#39;</span>
+</span><span class='line'>    <span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And now what? Well, we just need to check if a condition <em>(something) is a name of the day</em> is true, or not. But we
+have an array, not a primitive value that can be checked using single <code>if</code>.
+Yes, but we also have a handful <code>Array#filter</code> method. Citing
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter">MDN</a>:</p>
+
+<blockquote><p><code>Array#filter</code> creates a new array with all elements that pass the test implemented by the provided function.</p></blockquote>
+
+<p>So, if no elements pass the test, returned array will be empty. And that can be
+easily checked:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">is_dayname</span><span class="p">(</span><span class="nx">string</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="cm">/* Check if passed value &#39;v&#39; (name of the day)</span>
+</span><span class='line'><span class="cm">   * is the same as &#39;string&#39;</span>
+</span><span class='line'><span class="cm">   */</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">test</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">v</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">v</span> <span class="o">==</span> <span class="nx">string</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">daynames</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">test</span><span class="p">).</span><span class="nx">length</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">else</span>
+</span><span class='line'>    <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// is_dayname(&#39;not_a_day&#39;)</span>
+</span><span class='line'><span class="c1">// =&gt; false</span>
+</span><span class='line'><span class="c1">// is_dayname(&#39;Monday&#39;)</span>
+</span><span class='line'><span class="c1">// =&gt; true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It requires less typing and can be easily made reusable.</p>
+
+<h2>Lookup Object</h2>
+
+<p>This technique is almost identical to <a href="/blog/2013/06/03/lookup-tables-say-goodbye-to-conditional-statements/">Lookup Tables</a>, but it uses object instead of an array:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">daynames</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="s1">&#39;Monday&#39;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;Tuesday&#39;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;Wednesday&#39;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;Thursday&#39;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;Friday&#39;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;Saturday&#39;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;Sunday&#39;</span><span class="o">:</span> <span class="kc">true</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">is_dayname</span><span class="p">(</span><span class="nx">string</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">daynames</span><span class="p">[</span><span class="nx">string</span><span class="p">]</span> <span class="o">?</span> <span class="kc">true</span> <span class="o">:</span> <span class="kc">false</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// is_dayname(&#39;not_a_day&#39;)</span>
+</span><span class='line'><span class="c1">// =&gt; false</span>
+</span><span class='line'><span class="c1">// is_dayname(&#39;Monday&#39;)</span>
+</span><span class='line'><span class="c1">// =&gt; true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Lookup Object saves the biggest amount of time, but it&rsquo;s not so reusable as
+using <code>filter</code>.</p>
+
+<p>Both techniques are slower than <code>switch</code> &ndash; see <a href="http://jsperf.com/filter-vs-lookup-object">jsperf test</a> &ndash;
+but less verbose, easier to maintain and save time. I don&rsquo;t say performance
+isn&rsquo;t important. But sometimes we don&rsquo;t need top-speed app and sometimes we
+perform some operations on small data amounts. In such case, lookup object or
+<code>filter</code> are good enough.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Dawid Szlachta</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-10T16:10:00+02:00" pubdate data-updated="true">Aug 10<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/javascript/'>javascript</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://dszlachta.github.io/blog/2013/08/10/one-more-way-to-skip-switch-statements-array-number-filter/" data-via="d_szlachta" data-counturl="http://dszlachta.github.io/blog/2013/08/10/one-more-way-to-skip-switch-statements-array-number-filter/" >Tweet</a>
+  
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/07/16/function-dot-bind/" title="Previous Post: Function.prototype.bind()">&laquo; Function.prototype.bind()</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/08/28/thinking-unix/" title="Next Post: Thinking Unix">Thinking Unix &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    I'm Dawid Szlachta. I like good coffee and good code. I'm programming JavaScript because it's fascinating.
+</p>
+<p>
+    <a href="http://twitter.com/d_szlachta">@d_szlachta</a>
+</p>
+    <p class="credit">Blogging with <a href="http://octopress.org">Octopress</a></p>
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'scrptn';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://dszlachta.github.io/blog/2013/08/10/one-more-way-to-skip-switch-statements-array-number-filter/';
+        var disqus_url = 'http://dszlachta.github.io/blog/2013/08/10/one-more-way-to-skip-switch-statements-array-number-filter/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

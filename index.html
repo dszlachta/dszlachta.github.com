@@ -7,8 +7,8 @@
   <meta name="author" content="Dawid Szlachta">
 
   
-  <meta name="description" content="Have you ever wonder how to get rid of all those ifs and switches in your
-code? Well, it&rsquo;s possible thanks to the technique known as Lookup &hellip;">
+  <meta name="description" content="This post isn&rsquo;t about operating systems. It&rsquo;s about writing good, testable
+code. As we all know, testing is very important. Well, it& &hellip;">
   
 
   
@@ -48,6 +48,152 @@ code? Well, it&rsquo;s possible thanks to the technique known as Lookup &hellip;
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/08/28/thinking-unix/">Thinking Unix</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-28T14:28:00+02:00" pubdate data-updated="true">Aug 28<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This post isn&rsquo;t about operating systems. It&rsquo;s about writing good, testable
+code.</p>
+
+<p>As we all know, testing is very important. Well, it&rsquo;s so much important, that
+maybe it is the most important thing to do when developing an application. On
+the other hand, it&rsquo;s also important to write reusable and simple code. And good
+programmer shouldn&rsquo;t forget about future &ndash; maybe a part of the codebase will
+have to be changed?</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/08/28/thinking-unix/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/08/10/one-more-way-to-skip-switch-statements-array-number-filter/">Two More Ways to Skip Switch Statements: Array#filter and Lookup Object</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-10T16:10:00+02:00" pubdate data-updated="true">Aug 10<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>So the truth is: I don&rsquo;t like <code>switch</code> statements. They make my code look
+messy and they require me to type more. Few days ago I got an interesting idea
+to avoid them.</p>
+
+<p>Let&rsquo;s say we need to check if a given string represents a name of the day of
+the week. Traditional code would look like this:</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/08/10/one-more-way-to-skip-switch-statements-array-number-filter/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/16/function-dot-bind/">Function.prototype.bind()</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-16T20:37:00+02:00" pubdate data-updated="true">Jul 16<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>If you&rsquo;re familiar with a concept of functional programming in JavaScript, you
+should have already heard about <code>Function.prototype.bind</code> method. It looks like that:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nb">Function</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">thisArg</span><span class="p">,</span> <span class="nx">arg1</span><span class="p">,</span> <span class="nx">arg2</span><span class="p">,</span> <span class="p">...)</span>
+</span><span class='line'><span class="c1">// returns new function</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I find this method very useful, despite it does crucial thing for functional
+programming: <em>partial application</em>. But, first, I&rsquo;ll explain what else it does.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/07/16/function-dot-bind/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -99,12 +245,9 @@ values (like functions) you need, instead.</p>
 <span class='line-number'>13</span>
 <span class='line-number'>14</span>
 <span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
 </pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">getName</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
 </span><span class='line'>
 </span><span class='line'>    <span class="k">switch</span> <span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>
 </span><span class='line'>        <span class="k">case</span> <span class="mi">0</span><span class="o">:</span>
 </span><span class='line'>            <span class="k">return</span> <span class="s1">&#39;Ann&#39;</span><span class="p">;</span>
 </span><span class='line'>            <span class="k">break</span><span class="p">;</span>
@@ -114,7 +257,6 @@ values (like functions) you need, instead.</p>
 </span><span class='line'>        <span class="k">case</span> <span class="mi">2</span><span class="o">:</span>
 </span><span class='line'>            <span class="k">return</span> <span class="s1">&#39;Kate&#39;</span><span class="p">;</span>
 </span><span class='line'>            <span class="k">break</span><span class="p">;</span>
-</span><span class='line'>
 </span><span class='line'>    <span class="p">}</span>
 </span><span class='line'>
 </span><span class='line'><span class="p">}</span>
@@ -128,18 +270,12 @@ values (like functions) you need, instead.</p>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
 </pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">names</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">&#39;Ann&#39;</span><span class="p">,</span> <span class="s1">&#39;John&#39;</span><span class="p">,</span> <span class="s1">&#39;Kate&#39;</span> <span class="p">];</span>
 </span><span class='line'>
 </span><span class='line'><span class="kd">function</span> <span class="nx">getName</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>
 </span><span class='line'>    <span class="k">return</span> <span class="nx">names</span><span class="p">[</span><span class="nx">id</span><span class="p">];</span>
-</span><span class='line'>
 </span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
-
-
 
 
 </div>
@@ -167,15 +303,13 @@ values (like functions) you need, instead.</p>
 
     </div>
   </div>
-  <footer role="contentinfo">  <div>
-    <img src="/img/zd.png">
-  </div>
-
-  <div>
+  <footer role="contentinfo"><p>
     I'm Dawid Szlachta. I like good coffee and good code. I'm programming JavaScript because it's fascinating.
+</p>
+<p>
     <a href="http://twitter.com/d_szlachta">@d_szlachta</a>
+</p>
     <p class="credit">Blogging with <a href="http://octopress.org">Octopress</a></p>
-  </div>
 </footer>
   
 

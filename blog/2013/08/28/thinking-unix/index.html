@@ -1,0 +1,420 @@
+
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Thinking Unix - Scriptin'</title>
+  <meta name="author" content="Dawid Szlachta">
+
+  
+  <meta name="description" content="This post isn&rsquo;t about operating systems. It&rsquo;s about writing good, testable
+code. As we all know, testing is very important. Well, it& &hellip;">
+  
+
+  
+  <link rel="canonical" href="http://dszlachta.github.io/blog/2013/08/28/thinking-unix">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/style.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Scriptin'" type="application/atom+xml">
+  <script src="/js/prefixfree.min.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-41585591-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="/">Scriptin'</a></h1>
+  
+</hgroup>
+
+</header>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Thinking Unix</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-28T14:28:00+02:00" pubdate data-updated="true">Aug 28<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>This post isn&rsquo;t about operating systems. It&rsquo;s about writing good, testable
+code.</p>
+
+<p>As we all know, testing is very important. Well, it&rsquo;s so much important, that
+maybe it is the most important thing to do when developing an application. On
+the other hand, it&rsquo;s also important to write reusable and simple code. And good
+programmer shouldn&rsquo;t forget about future &ndash; maybe a part of the codebase will
+have to be changed?</p>
+
+<!-- more -->
+
+
+<p>Let&rsquo;s say we have a simple todo-list (well, <em>simple how-to-waste-my-life</em> list):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">calendar</span> <span class="o">=</span> <span class="p">[</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nx">date</span><span class="o">:</span> <span class="s1">&#39;2013-07-01&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">description</span><span class="o">:</span> <span class="s1">&#39;Write an operating system in JavaScript&#39;</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nx">date</span><span class="o">:</span> <span class="s1">&#39;2030-08-01&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">description</span><span class="o">:</span> <span class="s1">&#39;Write a web application in bare C&#39;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And we want to process it (that is &ndash; put date and description into a web page
+in the right order). We could make it this way:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">process</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">parent</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">node</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">current</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">parent</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;body&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="k">in</span> <span class="nx">data</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="nx">i</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="nx">current</span> <span class="o">=</span> <span class="nx">data</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nx">current</span><span class="p">.</span><span class="nx">date</span><span class="p">)</span>
+</span><span class='line'>                <span class="nx">parent</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;&lt;div&gt;&lt;b&gt;&#39;</span> <span class="o">+</span> <span class="nx">current</span><span class="p">.</span><span class="nx">date</span> <span class="o">+</span> <span class="s1">&#39;&lt;/b&gt;&lt;p&gt;&#39;</span> <span class="o">+</span> <span class="nx">current</span><span class="p">.</span><span class="nx">description</span> <span class="o">+</span> <span class="s1">&#39;&lt;/p&gt;&lt;/div&gt;&#39;</span><span class="p">));</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So, it&rsquo;s just a simple function. We can test it, and even change it in the future. Yeah, but we can do it better.
+For example testing this function answers only one question: does it output
+some HTML elements or not? And we need more data. Because, if it doesn&rsquo;t make
+new HTML elements, we know only that it doesn&rsquo;t work, but we don&rsquo;t know which
+part fails. If a function is more complicated, we have a serious problem.</p>
+
+<p>Now, can we reuse that function? Not much. We could modify it to take a second
+argument, which would be a parent node for the output <code>div</code> element, but still
+we could reuse it only when we want some HTML output.</p>
+
+<p>The <code>process</code> function is a single function, but does tree different things:</p>
+
+<ol>
+<li>It iterates through a data collection</li>
+<li>It checks a condition</li>
+<li>It takes some data and puts it into the <code>body</code> element</li>
+</ol>
+
+
+<p>We will split those actions into different functions. Given the same <code>calendar</code>
+array:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="cm">/* Check if object has a &quot;date&quot; field */</span>
+</span><span class='line'><span class="kd">function</span> <span class="nx">valid</span><span class="p">(</span><span class="nx">object</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="o">!!</span><span class="nx">object</span><span class="p">.</span><span class="nx">date</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Put values into correct HTML elements */</span>
+</span><span class='line'><span class="kd">function</span> <span class="nx">format</span><span class="p">(</span><span class="nx">calendar_fragment</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="p">[</span>
+</span><span class='line'>        <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;&lt;b&gt;&#39;</span> <span class="o">+</span> <span class="nx">calendar_fragment</span><span class="p">.</span><span class="nx">date</span> <span class="o">+</span> <span class="s1">&#39;&lt;/b&gt;&#39;</span><span class="p">),</span>
+</span><span class='line'>        <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;&#39;</span> <span class="o">+</span> <span class="nx">calendar_fragment</span><span class="p">.</span><span class="nx">description</span> <span class="o">+</span> <span class="s1">&#39;&lt;/p&gt;&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Output data */</span>
+</span><span class='line'><span class="kd">function</span> <span class="nx">output</span><span class="p">(</span><span class="nx">formatted</span><span class="p">,</span> <span class="nx">parent</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">div</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;&lt;div&gt;&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">div</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">formatted</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+</span><span class='line'>    <span class="nx">div</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">formatted</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">$</span><span class="p">(</span><span class="nx">parent</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="nx">div</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Iterate */</span>
+</span><span class='line'><span class="kd">function</span> <span class="nx">walk_calendar</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="k">in</span> <span class="nx">data</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="nx">i</span><span class="p">))</span>
+</span><span class='line'>            <span class="nx">cb</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">process</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">walk_calendar</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">current</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">valid</span><span class="p">(</span><span class="nx">current</span><span class="p">))</span>
+</span><span class='line'>            <span class="nx">output</span><span class="p">(</span><span class="nx">format</span><span class="p">(</span><span class="nx">current</span><span class="p">),</span> <span class="s1">&#39;body&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you see, now we have 5 functions instead of 1. Worst? No, it&rsquo;s better.</p>
+
+<p>Any of those functions is simpler that the original one. So the whole script is
+simpler to understand.</p>
+
+<p>We can also test all of those functions and that will give us a valueable feedback (for example that function
+<code>format</code> returns bad values &ndash; and it means, that <strong>this</strong> single chunk of code doesn&rsquo;t work).</p>
+
+<p>Modifying any function written here is simple. More important, we can reuse
+them. For example we could reuse function <code>walk_calendar</code> to count things, or
+to draw some kind of diagram or anything. We can use <code>valid</code> later, to check
+for valid objects where we need it. And if in future we decide that a <em>valid object</em> should have not
+only <code>date</code> attribute, but also a description, we&rsquo;ll change only this single
+function. Function <code>output</code> can be reused to output anything, like an error
+message (or <em>All todos completed. You have just wasted your life,
+congratulations</em> message).</p>
+
+<p>I think I can say that this technique is the basis of functional programming.
+But even if you&rsquo;re not interested in it, keeping functions simple and doing one
+thing only makes your code better for testing, future-proof and gives you more free time.</p>
+
+<p>Now the story. The title of this post is <em>Think Unix</em>. That&rsquo;s because the
+Unix philosophy means creating small programs, that do only one thing, but
+do it good. You can easily <em>glue</em> those programs by using Unix pipes and output
+redirection (that&rsquo;s our <code>process</code> function).</p>
+
+<p>So, think Unix.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Dawid Szlachta</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-28T14:28:00+02:00" pubdate data-updated="true">Aug 28<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/functional/'>functional</a>, <a class='category' href='/blog/categories/javascript/'>javascript</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://dszlachta.github.io/blog/2013/08/28/thinking-unix/" data-via="d_szlachta" data-counturl="http://dszlachta.github.io/blog/2013/08/28/thinking-unix/" >Tweet</a>
+  
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/08/10/one-more-way-to-skip-switch-statements-array-number-filter/" title="Previous Post: Two more ways to skip switch statements: Array#filter and lookup object">&laquo; Two more ways to skip switch statements: Array#filter and lookup object</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    I'm Dawid Szlachta. I like good coffee and good code. I'm programming JavaScript because it's fascinating.
+</p>
+<p>
+    <a href="http://twitter.com/d_szlachta">@d_szlachta</a>
+</p>
+    <p class="credit">Blogging with <a href="http://octopress.org">Octopress</a></p>
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'scrptn';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://dszlachta.github.io/blog/2013/08/28/thinking-unix/';
+        var disqus_url = 'http://dszlachta.github.io/blog/2013/08/28/thinking-unix/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

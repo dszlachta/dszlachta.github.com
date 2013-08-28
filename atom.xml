@@ -4,7 +4,7 @@
   <title><![CDATA[Scriptin']]></title>
   <link href="http://dszlachta.github.io/atom.xml" rel="self"/>
   <link href="http://dszlachta.github.io/"/>
-  <updated>2013-06-11T09:03:07+02:00</updated>
+  <updated>2013-08-28T17:47:03+02:00</updated>
   <id>http://dszlachta.github.io/</id>
   <author>
     <name><![CDATA[Dawid Szlachta]]></name>
@@ -12,6 +12,653 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Thinking Unix]]></title>
+    <link href="http://dszlachta.github.io/blog/2013/08/28/thinking-unix/"/>
+    <updated>2013-08-28T14:28:00+02:00</updated>
+    <id>http://dszlachta.github.io/blog/2013/08/28/thinking-unix</id>
+    <content type="html"><![CDATA[<p>This post isn&rsquo;t about operating systems. It&rsquo;s about writing good, testable
+code.</p>
+
+<p>As we all know, testing is very important. Well, it&rsquo;s so much important, that
+maybe it is the most important thing to do when developing an application. On
+the other hand, it&rsquo;s also important to write reusable and simple code. And good
+programmer shouldn&rsquo;t forget about future &ndash; maybe a part of the codebase will
+have to be changed?</p>
+
+<!-- more -->
+
+
+<p>Let&rsquo;s say we have a simple todo-list (well, <em>simple how-to-waste-my-life</em> list):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">calendar</span> <span class="o">=</span> <span class="p">[</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nx">date</span><span class="o">:</span> <span class="s1">&#39;2013-07-01&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">description</span><span class="o">:</span> <span class="s1">&#39;Write an operating system in JavaScript&#39;</span>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="nx">date</span><span class="o">:</span> <span class="s1">&#39;2030-08-01&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">description</span><span class="o">:</span> <span class="s1">&#39;Write a web application in bare C&#39;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And we want to process it (that is &ndash; put date and description into a web page
+in the right order). We could make it this way:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">process</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">parent</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">node</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">current</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">parent</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;body&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="k">in</span> <span class="nx">data</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="nx">i</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="nx">current</span> <span class="o">=</span> <span class="nx">data</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="nx">current</span><span class="p">.</span><span class="nx">date</span><span class="p">)</span>
+</span><span class='line'>                <span class="nx">parent</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;&lt;div&gt;&lt;b&gt;&#39;</span> <span class="o">+</span> <span class="nx">current</span><span class="p">.</span><span class="nx">date</span> <span class="o">+</span> <span class="s1">&#39;&lt;/b&gt;&lt;p&gt;&#39;</span> <span class="o">+</span> <span class="nx">current</span><span class="p">.</span><span class="nx">description</span> <span class="o">+</span> <span class="s1">&#39;&lt;/p&gt;&lt;/div&gt;&#39;</span><span class="p">));</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So, it&rsquo;s just a simple function. We can test it, and even change it in the future. Yeah, but we can do it better.
+For example testing this function answers only one question: does it output
+some HTML elements or not? And we need more data. Because, if it doesn&rsquo;t make
+new HTML elements, we know only that it doesn&rsquo;t work, but we don&rsquo;t know which
+part fails. If a function is more complicated, we have a serious problem.</p>
+
+<p>Now, can we reuse that function? Not much. We could modify it to take a second
+argument, which would be a parent node for the output <code>div</code> element, but still
+we could reuse it only when we want some HTML output.</p>
+
+<p>The <code>process</code> function is a single function, but does tree different things:</p>
+
+<ol>
+<li>It iterates through a data collection</li>
+<li>It checks a condition</li>
+<li>It takes some data and puts it into the <code>body</code> element</li>
+</ol>
+
+
+<p>We will split those actions into different functions. Given the same <code>calendar</code>
+array:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="cm">/* Check if object has a &quot;date&quot; field */</span>
+</span><span class='line'><span class="kd">function</span> <span class="nx">valid</span><span class="p">(</span><span class="nx">object</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="o">!!</span><span class="nx">object</span><span class="p">.</span><span class="nx">date</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Put values into correct HTML elements */</span>
+</span><span class='line'><span class="kd">function</span> <span class="nx">format</span><span class="p">(</span><span class="nx">calendar_fragment</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="p">[</span>
+</span><span class='line'>        <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;&lt;b&gt;&#39;</span> <span class="o">+</span> <span class="nx">calendar_fragment</span><span class="p">.</span><span class="nx">date</span> <span class="o">+</span> <span class="s1">&#39;&lt;/b&gt;&#39;</span><span class="p">),</span>
+</span><span class='line'>        <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;&lt;p&gt;&#39;</span> <span class="o">+</span> <span class="nx">calendar_fragment</span><span class="p">.</span><span class="nx">description</span> <span class="o">+</span> <span class="s1">&#39;&lt;/p&gt;&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Output data */</span>
+</span><span class='line'><span class="kd">function</span> <span class="nx">output</span><span class="p">(</span><span class="nx">formatted</span><span class="p">,</span> <span class="nx">parent</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">div</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;&lt;div&gt;&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">div</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">formatted</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+</span><span class='line'>    <span class="nx">div</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">formatted</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">$</span><span class="p">(</span><span class="nx">parent</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="nx">div</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/* Iterate */</span>
+</span><span class='line'><span class="kd">function</span> <span class="nx">walk_calendar</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="k">in</span> <span class="nx">data</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="nx">i</span><span class="p">))</span>
+</span><span class='line'>            <span class="nx">cb</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">process</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">walk_calendar</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">current</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">valid</span><span class="p">(</span><span class="nx">current</span><span class="p">))</span>
+</span><span class='line'>            <span class="nx">output</span><span class="p">(</span><span class="nx">format</span><span class="p">(</span><span class="nx">current</span><span class="p">),</span> <span class="s1">&#39;body&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you see, now we have 5 functions instead of 1. Worst? No, it&rsquo;s better.</p>
+
+<p>Any of those functions is simpler that the original one. So the whole script is
+simpler to understand.</p>
+
+<p>We can also test all of those functions and that will give us a valueable feedback (for example that function
+<code>format</code> returns bad values &ndash; and it means, that <strong>this</strong> single chunk of code doesn&rsquo;t work).</p>
+
+<p>Modifying any function written here is simple. More important, we can reuse
+them. For example we could reuse function <code>walk_calendar</code> to count things, or
+to draw some kind of diagram or anything. We can use <code>valid</code> later, to check
+for valid objects where we need it. And if in future we decide that a <em>valid object</em> should have not
+only <code>date</code> attribute, but also a description, we&rsquo;ll change only this single
+function. Function <code>output</code> can be reused to output anything, like an error
+message (or <em>All todos completed. You have just wasted your life,
+congratulations</em> message).</p>
+
+<p>I think I can say that this technique is the basis of functional programming.
+But even if you&rsquo;re not interested in it, keeping functions simple and doing one
+thing only makes your code better for testing, future-proof and gives you more free time.</p>
+
+<p>Now the story. The title of this post is <em>Think Unix</em>. That&rsquo;s because the
+Unix philosophy means creating small programs, that do only one thing, but
+do it good. You can easily <em>glue</em> those programs by using Unix pipes and output
+redirection (that&rsquo;s our <code>process</code> function).</p>
+
+<p>So, think Unix.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Two more ways to skip switch statements: Array#filter and lookup object]]></title>
+    <link href="http://dszlachta.github.io/blog/2013/08/10/one-more-way-to-skip-switch-statements-array-number-filter/"/>
+    <updated>2013-08-10T16:10:00+02:00</updated>
+    <id>http://dszlachta.github.io/blog/2013/08/10/one-more-way-to-skip-switch-statements-array-number-filter</id>
+    <content type="html"><![CDATA[<p>So the truth is: I don&rsquo;t like <code>switch</code> statements. They make my code look
+messy and they require me to type more. Few days ago I got an interesting idea
+to avoid them.</p>
+
+<p>Let&rsquo;s say we need to check if a given string represents a name of the day of
+the week. Traditional code would look like this:</p>
+
+<!-- more -->
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">is_dayname</span><span class="p">(</span><span class="nx">string</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">r</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">switch</span><span class="p">(</span><span class="nx">string</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">case</span> <span class="s1">&#39;Monday&#39;</span><span class="o">:</span>
+</span><span class='line'>    <span class="k">case</span> <span class="s1">&#39;Tuesday&#39;</span><span class="o">:</span>
+</span><span class='line'>    <span class="k">case</span> <span class="s1">&#39;Wednesday&#39;</span><span class="o">:</span>
+</span><span class='line'>    <span class="k">case</span> <span class="s1">&#39;Thursday&#39;</span><span class="o">:</span>
+</span><span class='line'>    <span class="k">case</span> <span class="s1">&#39;Friday&#39;</span><span class="o">:</span>
+</span><span class='line'>    <span class="k">case</span> <span class="s1">&#39;Saturday&#39;</span><span class="o">:</span>
+</span><span class='line'>    <span class="k">case</span> <span class="s1">&#39;Sunday&#39;</span><span class="o">:</span>
+</span><span class='line'>      <span class="nx">r</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">default</span><span class="o">:</span>
+</span><span class='line'>      <span class="nx">r</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">r</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// is_dayname(&#39;not_a_day&#39;)</span>
+</span><span class='line'><span class="c1">// =&gt; false</span>
+</span><span class='line'><span class="c1">// is_dayname(&#39;Monday&#39;)</span>
+</span><span class='line'><span class="c1">// =&gt; true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&rsquo;s too much code to achieve this simple functionality. Names of the
+days are some kind of list, aren&rsquo;t they? So we could put them into an array:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">daynames</span> <span class="o">=</span> <span class="p">[</span>
+</span><span class='line'>        <span class="s1">&#39;Monday&#39;</span><span class="p">,</span> <span class="s1">&#39;Tuesday&#39;</span><span class="p">,</span> <span class="s1">&#39;Wednesday&#39;</span><span class="p">,</span> <span class="s1">&#39;Thursday&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s1">&#39;Friday&#39;</span><span class="p">,</span> <span class="s1">&#39;Saturday&#39;</span><span class="p">,</span> <span class="s1">&#39;Sunday&#39;</span>
+</span><span class='line'>    <span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And now what? Well, we just need to check if a condition <em>(something) is a name of the day</em> is true, or not. But we
+have an array, not a primitive value that can be checked using single <code>if</code>.
+Yes, but we also have a handful <code>Array#filter</code> method. Citing
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter">MDN</a>:</p>
+
+<blockquote><p><code>Array#filter</code> creates a new array with all elements that pass the test implemented by the provided function.</p></blockquote>
+
+<p>So, if no elements pass the test, returned array will be empty. And that can be
+easily checked:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">is_dayname</span><span class="p">(</span><span class="nx">string</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="cm">/* Check if passed value &#39;v&#39; (name of the day)</span>
+</span><span class='line'><span class="cm">   * is the same as &#39;string&#39;</span>
+</span><span class='line'><span class="cm">   */</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">test</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">v</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">v</span> <span class="o">==</span> <span class="nx">string</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">daynames</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">test</span><span class="p">).</span><span class="nx">length</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">else</span>
+</span><span class='line'>    <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// is_dayname(&#39;not_a_day&#39;)</span>
+</span><span class='line'><span class="c1">// =&gt; false</span>
+</span><span class='line'><span class="c1">// is_dayname(&#39;Monday&#39;)</span>
+</span><span class='line'><span class="c1">// =&gt; true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It requires less typing and can be easily made reusable.</p>
+
+<h2>Lookup Object</h2>
+
+<p>This technique is almost identical to <a href="http://dszlachta.github.io/blog/2013/06/03/lookup-tables-say-goodbye-to-conditional-statements/">Lookup Tables</a>, but it uses object instead of an array:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">daynames</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>  <span class="s1">&#39;Monday&#39;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;Tuesday&#39;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;Wednesday&#39;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;Thursday&#39;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;Friday&#39;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;Saturday&#39;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span><span class='line'>  <span class="s1">&#39;Sunday&#39;</span><span class="o">:</span> <span class="kc">true</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">function</span> <span class="nx">is_dayname</span><span class="p">(</span><span class="nx">string</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">daynames</span><span class="p">[</span><span class="nx">string</span><span class="p">]</span> <span class="o">?</span> <span class="kc">true</span> <span class="o">:</span> <span class="kc">false</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// is_dayname(&#39;not_a_day&#39;)</span>
+</span><span class='line'><span class="c1">// =&gt; false</span>
+</span><span class='line'><span class="c1">// is_dayname(&#39;Monday&#39;)</span>
+</span><span class='line'><span class="c1">// =&gt; true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Lookup Object saves the biggest amount of time, but it&rsquo;s not so reusable as
+using <code>filter</code>.</p>
+
+<p>Both techniques are slower than <code>switch</code> &ndash; see <a href="http://jsperf.com/filter-vs-lookup-object">jsperf test</a> &ndash;
+but less verbose, easier to maintain and save time. I don&rsquo;t say performance
+isn&rsquo;t important. But sometimes we don&rsquo;t need top-speed app and sometimes we
+perform some operations on small data amounts. In such case, lookup object or
+<code>filter</code> are good enough.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Function.prototype.bind()]]></title>
+    <link href="http://dszlachta.github.io/blog/2013/07/16/function-dot-bind/"/>
+    <updated>2013-07-16T20:37:00+02:00</updated>
+    <id>http://dszlachta.github.io/blog/2013/07/16/function-dot-bind</id>
+    <content type="html"><![CDATA[<p>If you&rsquo;re familiar with a concept of functional programming in JavaScript, you
+should have already heard about <code>Function.prototype.bind</code> method. It looks like that:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nb">Function</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">thisArg</span><span class="p">,</span> <span class="nx">arg1</span><span class="p">,</span> <span class="nx">arg2</span><span class="p">,</span> <span class="p">...)</span>
+</span><span class='line'><span class="c1">// returns new function</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I find this method very useful, despite it does crucial thing for functional
+programming: <em>partial application</em>. But, first, I&rsquo;ll explain what else it does.</p>
+
+<!-- more -->
+
+
+<h2>Binding to Object</h2>
+
+<p>Ok, so first thing is that you can use <code>bind()</code> to change reference to <code>this</code>
+inside a function.</p>
+
+<p>Let&rsquo;s say we have two objects like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">human</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;John&#39;</span><span class="p">,</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">getName</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">robot</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Rob&#39;</span><span class="p">,</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">doSomeStuff</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// ...</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So, people usually have names, but often they give names to things, like
+robots, also. We could write <code>robot.getName()</code> method, but it would be identical
+to <code>human.getName()</code> &ndash; why repeat code? We&rsquo;ll use <code>bind()</code> to change <code>this</code>
+reference!</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">robot</span><span class="p">.</span><span class="nx">getName</span> <span class="o">=</span> <span class="nx">human</span><span class="p">.</span><span class="nx">getName</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">robot</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">human</span><span class="p">.</span><span class="nx">getName</span><span class="p">();</span>
+</span><span class='line'><span class="c1">// =&gt; &#39;John&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">robot</span><span class="p">.</span><span class="nx">getName</span><span class="p">();</span>
+</span><span class='line'><span class="c1">// =&gt; &#39;Rob&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// btw, we could also do it anonymously:</span>
+</span><span class='line'><span class="c1">// (human.getName.bind(robot)).call();</span>
+</span><span class='line'><span class="c1">// but using just call() is better option here:</span>
+</span><span class='line'><span class="c1">// human.getName.call(robot);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now, it&rsquo;s time to do something really useful!</p>
+
+<h2>Partial application</h2>
+
+<p>Partial application means that you <em>bind</em> values to the arguments, so you don&rsquo;t
+have to specify them when calling a function:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">famousPerson</span><span class="p">(</span><span class="nx">citizenship</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">name</span> <span class="o">+</span> <span class="s1">&#39; is famous &#39;</span> <span class="o">+</span> <span class="nx">citizenship</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">famousPerson</span><span class="p">(</span><span class="s1">&#39;French&#39;</span><span class="p">,</span> <span class="s1">&#39;Victor Hugo&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// =&gt; Victor Hugo is famous French</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// now we have some Czechs, so we can bind citizenship argument to &quot;Czech&quot;</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">famousCzech</span> <span class="o">=</span> <span class="nx">famousPerson</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="s1">&#39;Czech&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">famousCzech</span><span class="p">(</span><span class="s1">&#39;Bohumil Hrabal&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nx">famousCzech</span><span class="p">(</span><span class="s1">&#39;Václav Havel&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="c1">// =&gt; Bohumil Hrabal is famous Czech</span>
+</span><span class='line'><span class="c1">// =&gt; Václav Havel is famous Czech</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That was theory. Yesterday I coded a <code>prettyPrint</code> object to format some simple
+JavaScript output in a <code>div</code> (it puts numbers into <code>span.number</code>, strings into
+<code>span.string</code> and so on). I had one general method, <code>prettyPrint.output()</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">prettyPrint</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">output</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">className</span><span class="p">,</span> <span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;&lt;span class=&quot;&#39;</span><span class="o">+</span> <span class="nx">className</span> <span class="o">+</span><span class="s1">&#39;&quot;&gt;&#39;</span><span class="p">,</span> <span class="nx">o</span><span class="p">,</span> <span class="s1">&#39;&lt;/span&gt;&#39;</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// ...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I didn&rsquo;t wanted to use conditional statements to decide what className argument
+script should use, because the code would look a little messy. I wanted to have
+simple methods, and I generated them using <code>bind()</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// later in code</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">pp</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">prettyPrint</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">output</span> <span class="o">=</span> <span class="nx">pp</span><span class="p">.</span><span class="nx">output</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">pp</span><span class="p">.</span><span class="nx">number</span> <span class="o">=</span> <span class="nx">output</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">pp</span><span class="p">,</span> <span class="s1">&#39;number&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nx">pp</span><span class="p">.</span><span class="nx">string</span> <span class="o">=</span> <span class="nx">output</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">pp</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nx">pp</span><span class="p">.</span><span class="nx">fn</span> <span class="o">=</span> <span class="nx">output</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">pp</span><span class="p">,</span> <span class="s1">&#39;function&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This simple thing let me not only save my time, but also made code looks
+simplier, which is always good.</p>
+
+<h2>Some resources</h2>
+
+<p>Ofcourse, read <code>bind()</code> documentation on MDN. There&rsquo;s also a great library &ndash;
+underscore.js &ndash; that makes functional programming in JavaScript easier, and it
+provides <code>bind()</code> function. If you&rsquo;re interested in functional programming,
+check my blog, I&rsquo;ll surely write more about that topic.</p>
+
+<ul>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind">Function.prototype.bind on MDN</a></li>
+<li><a href="http://underscorejs.org">underscore.js</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Lookup Tables: Say Goodbye to Conditional Statements]]></title>
@@ -40,12 +687,9 @@ values (like functions) you need, instead.</p>
 <span class='line-number'>13</span>
 <span class='line-number'>14</span>
 <span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
 </pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">getName</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
 </span><span class='line'>
 </span><span class='line'>    <span class="k">switch</span> <span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>
 </span><span class='line'>        <span class="k">case</span> <span class="mi">0</span><span class="o">:</span>
 </span><span class='line'>            <span class="k">return</span> <span class="s1">&#39;Ann&#39;</span><span class="p">;</span>
 </span><span class='line'>            <span class="k">break</span><span class="p">;</span>
@@ -55,7 +699,6 @@ values (like functions) you need, instead.</p>
 </span><span class='line'>        <span class="k">case</span> <span class="mi">2</span><span class="o">:</span>
 </span><span class='line'>            <span class="k">return</span> <span class="s1">&#39;Kate&#39;</span><span class="p">;</span>
 </span><span class='line'>            <span class="k">break</span><span class="p">;</span>
-</span><span class='line'>
 </span><span class='line'>    <span class="p">}</span>
 </span><span class='line'>
 </span><span class='line'><span class="p">}</span>
@@ -69,18 +712,12 @@ values (like functions) you need, instead.</p>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
 </pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">names</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">&#39;Ann&#39;</span><span class="p">,</span> <span class="s1">&#39;John&#39;</span><span class="p">,</span> <span class="s1">&#39;Kate&#39;</span> <span class="p">];</span>
 </span><span class='line'>
 </span><span class='line'><span class="kd">function</span> <span class="nx">getName</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>
 </span><span class='line'>    <span class="k">return</span> <span class="nx">names</span><span class="p">[</span><span class="nx">id</span><span class="p">];</span>
-</span><span class='line'>
 </span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
-
-
 
 
 <!-- more -->
@@ -178,12 +815,8 @@ like this:</p>
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
 </pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">Keys</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s1">&#39;o&#39;</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">().</span><span class="nx">charCodeAt</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>
 </span><span class='line'>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;You pressed o!&#39;</span><span class="p">);</span>
-</span><span class='line'>
 </span><span class='line'><span class="p">});</span>
 </span><span class='line'>
 </span><span class='line'><span class="nb">window</span><span class="p">.</span><span class="nx">onkeydown</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
@@ -204,8 +837,8 @@ statements :) )</p>
 
 <p>Why lookup tables are better than big <code>switch</code> statements? Code is simplier
 (and that means it&rsquo;s better) and you get a performance boost (the JS engine
-don&rsquo;t have to check values). You can read more about lookup tables in the book
-<a href="http://www.amazon.com/gp/product/059680279X">High Performance JavaScript</a> by <a href="http://www.nczonline.net/">Nicholas C. Zakas</a> and others.</p>
+don&rsquo;t have to check values). You can read more about lookup tables in Nicholas
+C. Zakas&#8217; book <em>High Performance JavaScript</em>.</p>
 ]]></content>
   </entry>
   

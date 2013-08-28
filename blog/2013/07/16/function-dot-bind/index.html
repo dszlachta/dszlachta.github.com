@@ -1,0 +1,402 @@
+
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Function.prototype.bind() - Scriptin'</title>
+  <meta name="author" content="Dawid Szlachta">
+
+  
+  <meta name="description" content="If you&rsquo;re familiar with a concept of functional programming in JavaScript, you
+should have already heard about Function.prototype.bind method. &hellip;">
+  
+
+  
+  <link rel="canonical" href="http://dszlachta.github.io/blog/2013/07/16/function-dot-bind">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/style.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Scriptin'" type="application/atom+xml">
+  <script src="/js/prefixfree.min.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-41585591-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="/">Scriptin'</a></h1>
+  
+</hgroup>
+
+</header>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Function.prototype.bind()</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-16T20:37:00+02:00" pubdate data-updated="true">Jul 16<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>If you&rsquo;re familiar with a concept of functional programming in JavaScript, you
+should have already heard about <code>Function.prototype.bind</code> method. It looks like that:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nb">Function</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">thisArg</span><span class="p">,</span> <span class="nx">arg1</span><span class="p">,</span> <span class="nx">arg2</span><span class="p">,</span> <span class="p">...)</span>
+</span><span class='line'><span class="c1">// returns new function</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I find this method very useful, despite it does crucial thing for functional
+programming: <em>partial application</em>. But, first, I&rsquo;ll explain what else it does.</p>
+
+<!-- more -->
+
+
+<h2>Binding to Object</h2>
+
+<p>Ok, so first thing is that you can use <code>bind()</code> to change reference to <code>this</code>
+inside a function.</p>
+
+<p>Let&rsquo;s say we have two objects like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">human</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;John&#39;</span><span class="p">,</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">getName</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">name</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">robot</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Rob&#39;</span><span class="p">,</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">doSomeStuff</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// ...</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So, people usually have names, but often they give names to things, like
+robots, also. We could write <code>robot.getName()</code> method, but it would be identical
+to <code>human.getName()</code> &ndash; why repeat code? We&rsquo;ll use <code>bind()</code> to change <code>this</code>
+reference!</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">robot</span><span class="p">.</span><span class="nx">getName</span> <span class="o">=</span> <span class="nx">human</span><span class="p">.</span><span class="nx">getName</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">robot</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">human</span><span class="p">.</span><span class="nx">getName</span><span class="p">();</span>
+</span><span class='line'><span class="c1">// =&gt; &#39;John&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">robot</span><span class="p">.</span><span class="nx">getName</span><span class="p">();</span>
+</span><span class='line'><span class="c1">// =&gt; &#39;Rob&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// btw, we could also do it anonymously:</span>
+</span><span class='line'><span class="c1">// (human.getName.bind(robot)).call();</span>
+</span><span class='line'><span class="c1">// but using just call() is better option here:</span>
+</span><span class='line'><span class="c1">// human.getName.call(robot);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now, it&rsquo;s time to do something really useful!</p>
+
+<h2>Partial application</h2>
+
+<p>Partial application means that you <em>bind</em> values to the arguments, so you don&rsquo;t
+have to specify them when calling a function:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">famousPerson</span><span class="p">(</span><span class="nx">citizenship</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="nx">name</span> <span class="o">+</span> <span class="s1">&#39; is famous &#39;</span> <span class="o">+</span> <span class="nx">citizenship</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">famousPerson</span><span class="p">(</span><span class="s1">&#39;French&#39;</span><span class="p">,</span> <span class="s1">&#39;Victor Hugo&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// =&gt; Victor Hugo is famous French</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// now we have some Czechs, so we can bind citizenship argument to &quot;Czech&quot;</span>
+</span><span class='line'><span class="kd">var</span> <span class="nx">famousCzech</span> <span class="o">=</span> <span class="nx">famousPerson</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="s1">&#39;Czech&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">famousCzech</span><span class="p">(</span><span class="s1">&#39;Bohumil Hrabal&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nx">famousCzech</span><span class="p">(</span><span class="s1">&#39;Václav Havel&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="c1">// =&gt; Bohumil Hrabal is famous Czech</span>
+</span><span class='line'><span class="c1">// =&gt; Václav Havel is famous Czech</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That was theory. Yesterday I coded a <code>prettyPrint</code> object to format some simple
+JavaScript output in a <code>div</code> (it puts numbers into <code>span.number</code>, strings into
+<code>span.string</code> and so on). I had one general method, <code>prettyPrint.output()</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">prettyPrint</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nx">output</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">className</span><span class="p">,</span> <span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;&lt;span class=&quot;&#39;</span><span class="o">+</span> <span class="nx">className</span> <span class="o">+</span><span class="s1">&#39;&quot;&gt;&#39;</span><span class="p">,</span> <span class="nx">o</span><span class="p">,</span> <span class="s1">&#39;&lt;/span&gt;&#39;</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">},</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// ...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I didn&rsquo;t wanted to use conditional statements to decide what className argument
+script should use, because the code would look a little messy. I wanted to have
+simple methods, and I generated them using <code>bind()</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// later in code</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">pp</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">prettyPrint</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">output</span> <span class="o">=</span> <span class="nx">pp</span><span class="p">.</span><span class="nx">output</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">pp</span><span class="p">.</span><span class="nx">number</span> <span class="o">=</span> <span class="nx">output</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">pp</span><span class="p">,</span> <span class="s1">&#39;number&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nx">pp</span><span class="p">.</span><span class="nx">string</span> <span class="o">=</span> <span class="nx">output</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">pp</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nx">pp</span><span class="p">.</span><span class="nx">fn</span> <span class="o">=</span> <span class="nx">output</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">pp</span><span class="p">,</span> <span class="s1">&#39;function&#39;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This simple thing let me not only save my time, but also made code looks
+simplier, which is always good.</p>
+
+<h2>Some resources</h2>
+
+<p>Ofcourse, read <code>bind()</code> documentation on MDN. There&rsquo;s also a great library &ndash;
+underscore.js &ndash; that makes functional programming in JavaScript easier, and it
+provides <code>bind()</code> function. If you&rsquo;re interested in functional programming,
+check my blog, I&rsquo;ll surely write more about that topic.</p>
+
+<ul>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind">Function.prototype.bind on MDN</a></li>
+<li><a href="http://underscorejs.org">underscore.js</a></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Dawid Szlachta</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-16T20:37:00+02:00" pubdate data-updated="true">Jul 16<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/functional/'>functional</a>, <a class='category' href='/blog/categories/javascript/'>javascript</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://dszlachta.github.io/blog/2013/07/16/function-dot-bind/" data-via="d_szlachta" data-counturl="http://dszlachta.github.io/blog/2013/07/16/function-dot-bind/" >Tweet</a>
+  
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/06/03/lookup-tables-say-goodbye-to-conditional-statements/" title="Previous Post: Lookup Tables: Say Goodbye to Conditional Statements">&laquo; Lookup Tables: Say Goodbye to Conditional Statements</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/08/10/one-more-way-to-skip-switch-statements-array-number-filter/" title="Next Post: Two more ways to skip switch statements: Array#filter and lookup object">Two more ways to skip switch statements: Array#filter and lookup object &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+    I'm Dawid Szlachta. I like good coffee and good code. I'm programming JavaScript because it's fascinating.
+</p>
+<p>
+    <a href="http://twitter.com/d_szlachta">@d_szlachta</a>
+</p>
+    <p class="credit">Blogging with <a href="http://octopress.org">Octopress</a></p>
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'scrptn';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://dszlachta.github.io/blog/2013/07/16/function-dot-bind/';
+        var disqus_url = 'http://dszlachta.github.io/blog/2013/07/16/function-dot-bind/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
