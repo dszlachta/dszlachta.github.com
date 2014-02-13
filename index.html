@@ -7,8 +7,8 @@
   <meta name="author" content="Dawid Szlachta">
 
   
-  <meta name="description" content="This post isn&rsquo;t about operating systems. It&rsquo;s about writing good, testable
-code. As we all know, testing is very important. Well, it& &hellip;">
+  <meta name="description" content="We all know and use the good ol&#8217; for in loop &ndash; but it seems to me that seeing
+the in operator in use is almost impossible &ndash; it& &hellip;">
   
 
   
@@ -48,6 +48,70 @@ code. As we all know, testing is very important. Well, it& &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/02/13/the-forgotten-operator-in/">The Forgotten Operator: In</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-13T19:04:00+01:00" pubdate data-updated="true">Feb 13<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>We all know and use the good ol&#8217; <code>for in</code> loop &ndash; but it seems to me that seeing
+the <code>in</code> operator in use is almost impossible &ndash; it&rsquo;s somewhat forgotten. Let&rsquo;s
+have a closer look on it.</p>
+
+<p>The <code>in</code> operator returns <code>true</code> if object member exists:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">folk</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;John&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">age</span><span class="o">:</span> <span class="mi">21</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">&quot;name&quot;</span> <span class="k">in</span> <span class="nx">folk</span><span class="p">;</span> <span class="c1">//=&gt; true</span>
+</span><span class='line'><span class="s2">&quot;address&quot;</span> <span class="k">in</span> <span class="nx">folk</span> <span class="c1">//=&gt; false</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/02/13/the-forgotten-operator-in/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>

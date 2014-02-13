@@ -4,7 +4,7 @@
   <title><![CDATA[Scriptin']]></title>
   <link href="http://dszlachta.github.io/atom.xml" rel="self"/>
   <link href="http://dszlachta.github.io/"/>
-  <updated>2013-08-28T21:53:51+02:00</updated>
+  <updated>2014-02-13T19:32:43+01:00</updated>
   <id>http://dszlachta.github.io/</id>
   <author>
     <name><![CDATA[Dawid Szlachta]]></name>
@@ -12,6 +12,76 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[The forgotten operator: in]]></title>
+    <link href="http://dszlachta.github.io/blog/2014/02/13/the-forgotten-operator-in/"/>
+    <updated>2014-02-13T19:04:00+01:00</updated>
+    <id>http://dszlachta.github.io/blog/2014/02/13/the-forgotten-operator-in</id>
+    <content type="html"><![CDATA[<p>We all know and use the good ol&#8217; <code>for in</code> loop &ndash; but it seems to me that seeing
+the <code>in</code> operator in use is almost impossible &ndash; it&rsquo;s somewhat forgotten. Let&rsquo;s
+have a closer look on it.</p>
+
+<p>The <code>in</code> operator returns <code>true</code> if object member exists:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">folk</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;John&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="nx">age</span><span class="o">:</span> <span class="mi">21</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">&quot;name&quot;</span> <span class="k">in</span> <span class="nx">folk</span><span class="p">;</span> <span class="c1">//=&gt; true</span>
+</span><span class='line'><span class="s2">&quot;address&quot;</span> <span class="k">in</span> <span class="nx">folk</span> <span class="c1">//=&gt; false</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<!-- more -->
+
+
+<p>But there&rsquo;s something nasty (or useful &ndash; it depends) about this operator. It
+returns <code>true</code> for undefined members as well. So, if the member was
+declared, the <code>in</code> operator will return <code>true</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">folk</span><span class="p">.</span><span class="nx">address</span> <span class="o">=</span> <span class="s2">&quot;Green str&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="nx">folk</span><span class="p">.</span><span class="nx">address</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">&quot;address&quot;</span> <span class="k">in</span> <span class="nx">folk</span><span class="p">;</span> <span class="c1">//=&gt; true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Deleting a member will cause <code>in</code> to return <code>false</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="k">delete</span> <span class="nx">folk</span><span class="p">.</span><span class="nx">address</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s2">&quot;address&quot;</span> <span class="k">in</span> <span class="nx">folk</span><span class="p">;</span> <span class="c1">//=&gt; false</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ofcourse, <code>in</code> returns true for prototype&rsquo;s properties. Why? Because the way
+JavaScript inheritance is implemented &ndash; when the JS engine can&rsquo;t find a
+property in an object, it&rsquo;ll look for it in the object&rsquo;s prototype:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="s2">&quot;toString&quot;</span> <span class="k">in</span> <span class="nx">folk</span> <span class="c1">//=&gt; true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Thinking Unix]]></title>

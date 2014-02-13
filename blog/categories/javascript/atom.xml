@@ -4,7 +4,7 @@
   <title><![CDATA[Category: javascript | Scriptin']]></title>
   <link href="http://dszlachta.github.io/blog/categories/javascript/atom.xml" rel="self"/>
   <link href="http://dszlachta.github.io/"/>
-  <updated>2013-08-28T21:53:51+02:00</updated>
+  <updated>2014-02-13T19:32:43+01:00</updated>
   <id>http://dszlachta.github.io/</id>
   <author>
     <name><![CDATA[Dawid Szlachta]]></name>
@@ -12,6 +12,64 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[The forgotten operator: in]]></title>
+    <link href="http://dszlachta.github.io/blog/2014/02/13/the-forgotten-operator-in/"/>
+    <updated>2014-02-13T19:04:00+01:00</updated>
+    <id>http://dszlachta.github.io/blog/2014/02/13/the-forgotten-operator-in</id>
+    <content type="html"><![CDATA[<p>We all know and use the good ol' <code>for in</code> loop &ndash; but it seems to me that seeing
+the <code>in</code> operator in use is almost impossible &ndash; it&rsquo;s somewhat forgotten. Let&rsquo;s
+have a closer look on it.</p>
+
+<p>The <code>in</code> operator returns <code>true</code> if object member exists:</p>
+
+<p>```javascript</p>
+
+<p>var folk = {</p>
+
+<pre><code>    name: 'John',
+    age: 21 
+};
+</code></pre>
+
+<p>&ldquo;name&rdquo; in folk; //=> true
+&ldquo;address&rdquo; in folk //=> false
+```</p>
+
+<!-- more -->
+
+
+<p>But there&rsquo;s something nasty (or useful &ndash; it depends) about this operator. It
+returns <code>true</code> for undefined members as well. So, if the member was
+declared, the <code>in</code> operator will return <code>true</code>:</p>
+
+<p>```javascript</p>
+
+<p>folk.address = &ldquo;Green str&rdquo;;
+folk.address = undefined;</p>
+
+<p>&ldquo;address&rdquo; in folk; //=> true
+```</p>
+
+<p>Deleting a member will cause <code>in</code> to return <code>false</code>:</p>
+
+<p>```javascript</p>
+
+<p>delete folk.address;</p>
+
+<p>&ldquo;address&rdquo; in folk; //=> false
+```</p>
+
+<p>Ofcourse, <code>in</code> returns true for prototype&rsquo;s properties. Why? Because the way
+JavaScript inheritance is implemented &ndash; when the JS engine can&rsquo;t find a
+property in an object, it&rsquo;ll look for it in the object&rsquo;s prototype:</p>
+
+<p><code>javascript
+"toString" in folk //=&gt; true
+</code></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Thinking Unix]]></title>
